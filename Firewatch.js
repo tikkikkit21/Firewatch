@@ -109,21 +109,28 @@ class Firewatch extends Eris.Client {
         const updatedCommands = require("./updatedCommands.json");
 
         await Promise.all(updatedCommands.map(async (commandPath) => {
-            // specific command file
-            if (commandPath.includes("/")) {
-                const command = require(`./commands/${commandPath}.js`);
+            // // specific command file
+            // if (commandPath.includes("/")) {
+            //     const command = require(`./commands/${commandPath}.js`);
+            //     await this.createApplicationCommand(command);
+            // }
+
+            // // whole subdirectory
+            // else {
+            //     const subfolder = fs.readdirSync(`./commands/${commandPath}`);
+            //     subfolder.forEach(async (file) => {
+            //         const command = require(`./commands/${commandPath}/${file}`);
+
+            //         await this.createApplicationCommand(command);
+            //     });
+            // }
+
+            const subfolder = fs.readdirSync(`./commands/`);
+            await Promise.all(subfolder.map(async (file) => {
+                const command = require(`./commands/${file}`);
+
                 await this.createApplicationCommand(command);
-            }
-
-            // whole subdirectory
-            else {
-                const subfolder = fs.readdirSync(`./commands/${commandPath}`);
-                subfolder.forEach(async (file) => {
-                    const command = require(`./commands/${commandPath}/${file}`);
-
-                    await this.createApplicationCommand(command);
-                });
-            }
+            }));
         }));
         console.info("Loading application commands done");
     }
