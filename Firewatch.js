@@ -221,7 +221,7 @@ class Firewatch extends Eris.Client {
             this.errorCase++;
 
             fs.appendFileSync(
-                "./logs/errors.log",
+                "./errors.log",
                 `Case ${this.errorCase}: ${new Date()}\n${error.stack}\n\n`
             );
         } catch (e) {
