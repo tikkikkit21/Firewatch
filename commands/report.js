@@ -21,6 +21,20 @@ module.exports.execute = async function (interaction) {
 
         console.log("result:", result);
         console.log("result.data:", result.data);
+        console.log("len:", result.data.values?.length);
+
+        const resource = {
+            values: [['04/17/24 18:50', 'this', 'is', 'a', 'test']]
+        };
+
+        const result2 = await service.spreadsheets.values.update({
+            spreadsheetId: process.env.SHEET_ID,
+            range: `${hall}!A${result.data.values?.length + 1}:F${result.data.values?.length}`,
+            valueInputOption: "USER_ENTERED",
+            resource: resource,
+        });
+        console.log('%d cells updated.', result2.data.updatedCells);
+
 
         return `Reported fire at: ${hall}`;
     } catch (err) {
