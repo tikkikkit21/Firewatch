@@ -1,11 +1,37 @@
-module.exports.name = "report"
-module.exports.description = "Reports a fire alarm"
-module.exports.syntax = "`/report [options]`"
+const { GoogleAuth } = require('google-auth-library');
+const { google } = require('googleapis');
+
+const auth = new GoogleAuth({
+    keyFile: "credentials.json",
+    scopes: 'https://www.googleapis.com/auth/spreadsheets',
+});
+
+const service = google.sheets({ version: 'v4', auth });
 
 module.exports.execute = async function (interaction) {
-    return `Reported fire at: ${interaction.data.options?.[0]?.value}`;
+    const hall = interaction.data.options?.[0]?.value;
+    const time = interaction.data.options?.[1]?.value;
+    const comments = interaction.data.options?.[2]?.value;
+
+    try {
+        const result = await service.spreadsheets.values.get({
+            spreadsheetId: process.env.SHEET_ID,
+            range: hall
+        });
+
+        console.log("result:", result);
+        console.log("result.data:", result.data);
+
+        return `Reported fire at: ${hall}`;
+    } catch (err) {
+        bot.error(err);
+        return "Uh-oh, something went wrong";
+    }
 }
 
+module.exports.name = "report";
+module.exports.description = "Reports a fire alarm";
+module.exports.syntax = "`/report [options]`";
 module.exports.options = [
     {
         name: "hall",
