@@ -30,7 +30,7 @@ class Firewatch extends Eris.Client {
 
         this.once("ready", async () => {
             try {
-                this.loadAllFiles();
+                this.loadCommands();
                 await this.loadApplicationCommands();
                 await this.loadEvents();
 
@@ -60,36 +60,21 @@ class Firewatch extends Eris.Client {
     }
 
     /**
-     * Load command, timer, and scanner files
+     * Loads commands into the bot's collection
      */
-    loadAllFiles() {
+    loadCommands() {
         console.info("Loading files...");
 
-        // load commands
-        const commands = fs.readdirSync("./commands");
-        commands
-            .filter(f => !f.includes("."))
-            .forEach(subFolder => {
-                this.loadFolder("commands", `./commands/${subFolder}`)
-            });
-    }
-
-    /**
-     * Loads a folder of files into a bot collection
-     * @param {*} collectionName bot collection name
-     * @param {*} folderPath relative directory path
-     */
-    loadFolder(collectionName, folderPath) {
         const folder = fs
-            .readdirSync(path.resolve(__dirname, folderPath))
+            .readdirSync("./commands")
             .filter(file => file.endsWith(".js"));
 
         folder.forEach(fileName => {
             try {
-                const filePath = `${folderPath}/${fileName}`;
+                const filePath = `./commands/${fileName}`;
                 delete require.cache[require.resolve(filePath)];
                 const scanner = require(filePath);
-                this[collectionName].set(scanner.name, scanner);
+                this["commands"].set(scanner.name, scanner);
             } catch (error) {
                 console.error(error);
                 process.exit();
