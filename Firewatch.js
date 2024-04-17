@@ -30,8 +30,7 @@ class Firewatch extends Eris.Client {
 
         this.once("ready", async () => {
             try {
-                this.loadCommands();
-                await this.loadApplicationCommands();
+                await this.loadCommands();
                 await this.loadEvents();
 
                 this.editStatus("online", { name: "/help", type: 3 });
@@ -60,64 +59,31 @@ class Firewatch extends Eris.Client {
     }
 
     /**
-     * Loads commands into the bot's collection
+     * Loads command files into the bot's collection
      */
-    loadCommands() {
+    async loadCommands() {
         console.info("Loading files...");
 
-        const folder = fs
+        const appCommands = [];
+        const commands = fs
             .readdirSync("./commands")
             .filter(file => file.endsWith(".js"));
 
-        folder.forEach(fileName => {
+        commands.forEach(commandFile => {
             try {
-                const filePath = `./commands/${fileName}`;
+                const filePath = `./commands/${commandFile}`;
                 delete require.cache[require.resolve(filePath)];
-                const scanner = require(filePath);
-                this["commands"].set(scanner.name, scanner);
+                const command = require(filePath);
+                this["commands"].set(command.name, command);
+
+                appCommands.push(this.createApplicationCommand(command));
             } catch (error) {
                 console.error(error);
                 process.exit();
             }
         });
-    }
 
-    /**
-     * Loads slash commands when applicable. Slash commands only need to be
-     * created if they're new or their command structure (command.options) has
-     * changed. Otherwise, it's a waste of API calls to create slash commands
-     * that haven't changed. Therefore we use a config file to indicate which
-     * slash commands have changed and need to be reloaded in the API.
-     */
-    async loadApplicationCommands() {
-        console.info("Loading application commands...");
-        const updatedCommands = require("./updatedCommands.json");
-
-        await Promise.all(updatedCommands.map(async (commandPath) => {
-            // // specific command file
-            // if (commandPath.includes("/")) {
-            //     const command = require(`./commands/${commandPath}.js`);
-            //     await this.createApplicationCommand(command);
-            // }
-
-            // // whole subdirectory
-            // else {
-            //     const subfolder = fs.readdirSync(`./commands/${commandPath}`);
-            //     subfolder.forEach(async (file) => {
-            //         const command = require(`./commands/${commandPath}/${file}`);
-
-            //         await this.createApplicationCommand(command);
-            //     });
-            // }
-
-            const subfolder = fs.readdirSync(`./commands/`);
-            await Promise.all(subfolder.map(async (file) => {
-                const command = require(`./commands/${file}`);
-
-                await this.createApplicationCommand(command);
-            }));
-        }));
-        console.info("Loading application commands done");
+        await Promise.all(appCommands);
     }
 
     /**
