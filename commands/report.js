@@ -25,6 +25,18 @@ module.exports.options = [
                 name: "Cochrane",
                 value: "Cochrane"
             },
+            // TODO: add remaining halls
         ]
+    },
+    {
+        name: "time",
+        description: "when did the fire alarm go off? (24-hour format please, ex: 16:00)",
+        type: 3,
+        required: true
+    },
+    {
+        name: "comments",
+        description: "leave any additional comments you might have",
+        type: 3
     }
 ]
