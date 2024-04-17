@@ -19,27 +19,25 @@ module.exports.execute = async function (interaction) {
             range: hall
         });
 
-        console.log("result:", result);
+        const rowLength = result.data.values?.length;
+
+        if (!rowLength) return ":x: Failed to update spreadsheet";
+
         console.log("result.data:", result.data);
-        console.log("len:", result.data.values?.length);
 
-        const resource = {
-            values: [['04/17/24 18:50', 'this', 'is', 'a', 'test']]
-        };
-
-        const result2 = await service.spreadsheets.values.update({
+        await service.spreadsheets.values.update({
             spreadsheetId: process.env.SHEET_ID,
-            range: `${hall}!A${result.data.values?.length + 1}:F${result.data.values?.length}`,
+            range: `${hall}!A${rowLength + 1}:F${rowLength + 1}`,
             valueInputOption: "USER_ENTERED",
-            resource: resource,
+            resource: {
+                values: [['04/17/24 18:50', 'this', 'is', 'a', 'test', '']]
+            },
         });
-        console.log('%d cells updated.', result2.data.updatedCells);
-
 
         return `Reported fire at: ${hall}`;
     } catch (err) {
         bot.error(err);
-        return "Uh-oh, something went wrong";
+        return ":x: Uh-oh, something went wrong";
     }
 }
 
