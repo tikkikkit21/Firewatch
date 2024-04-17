@@ -9,7 +9,9 @@
   "author": "JadeJaguar17",
   "license": "ISC",
   "dependencies": {
+    "@google-cloud/local-auth": "^3.0.1",
     "dotenv": "^16.4.5",
-    "eris": "^0.17.2"
+    "eris": "^0.17.2",
+    "googleapis": "^134.0.0"
   }
 }
