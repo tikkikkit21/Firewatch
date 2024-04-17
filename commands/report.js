@@ -15,15 +15,15 @@ module.exports.options = [
         choices: [
             {
                 name: "Ambler Johnston",
-                value: "aj"
+                value: "AJ"
             },
             {
                 name: "Campbell",
-                value: "cam"
+                value: "Campbell"
             },
             {
                 name: "Cochrane",
-                value: "coc"
+                value: "Cochrane"
             },
         ]
     }
