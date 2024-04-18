@@ -74,7 +74,6 @@ function validateTime(timeString) {
 
 module.exports.name = "report";
 module.exports.description = "Reports a fire alarm";
-module.exports.syntax = "`/report [options]`";
 module.exports.options = [
     {
         name: "hall",
@@ -119,4 +118,4 @@ module.exports.options = [
         description: "leave any additional comments you might have",
         type: 3
     }
-]
+];

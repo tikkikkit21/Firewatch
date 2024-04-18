@@ -1,13 +1,7 @@
-// Discord
 const Eris = require("eris");
-
-// JS libraries
-const fs = require("fs")
-const path = require("path");
-
-// Config
+const fs = require("fs");
 const dotenv = require("dotenv");
-dotenv.config()
+dotenv.config();
 
 class Firewatch extends Eris.Client {
     constructor(token) {
@@ -33,8 +27,8 @@ class Firewatch extends Eris.Client {
                 await this.loadCommands();
                 await this.loadEvents();
 
-                this.editStatus("online", { name: "/help", type: 3 });
-                console.info("Bot launch succesful");
+                this.editStatus("online", { name: "/report", type: 3 });
+                console.info("Bot launch successful");
                 console.info("=========================");
             } catch (error) {
                 console.error(error);
@@ -87,7 +81,7 @@ class Firewatch extends Eris.Client {
     }
 
     /**
-     * 
+     * Creates a slash command from provided config
      * @param {any} commandConfig command config to load in (determined by each
      * property in module.exports)
      * @param {boolean} isDev whether or not to create command only in dev server
