@@ -14,6 +14,9 @@ module.exports.execute = async function (interaction) {
     const time = interaction.data.options?.[1]?.value;
     const comments = interaction.data.options?.[2]?.value || '';
 
+    // verify provided time string is valid
+    if (!validateTime(time)) return ":x: Invalid time format";
+
     // get today's date as mm/dd/yyyy with zero-padded numbers
     const today = new Date();
     const day = String(today.getDate()).padStart(2, '0');
@@ -47,6 +50,21 @@ module.exports.execute = async function (interaction) {
         bot.error(err);
         return ":x: Uh-oh, something went wrong";
     }
+}
+
+/**
+ * Checks if a time string is valid syntax
+ * @param {string} timeString time in string format
+ * @returns {boolean} whether provided string is a valid time
+ */
+function validateTime(timeString) {
+    const hhmm = /^([0-1]?[0-9]|2[0-3]):([0-5][0-9])$/;
+    const am_pm = /^(1[0-2]|0?[1-9]):([0-5][0-9]) ?(am|pm)$/;
+    const a_p = /^(1[0-2]|0?[1-9]):([0-5][0-9]) ?(a|p)$/;
+
+    return hhmm.test(timeString)
+        || am_pm.test(timeString)
+        || a_p.test(timeString);
 }
 
 module.exports.name = "report";
