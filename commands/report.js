@@ -15,7 +15,7 @@ module.exports.execute = async function (interaction) {
     const comments = interaction.data.options?.[2]?.value || "";
 
     // verify provided time string is valid
-    if (!validateTime(time)) return ":x: Invalid time format";
+    if (!validateTime(time)) return ":no_entry_sign: Invalid time format";
 
     // get today"s date as mm/dd/yyyy with zero-padded numbers
     const today = new Date();
@@ -45,7 +45,7 @@ module.exports.execute = async function (interaction) {
             },
         });
 
-        return `Reported fire at: ${hall}`;
+        return `:white_check_mark: Fire alarm reported at: \`${hall}\`. Thank you!`;
     } catch (err) {
         bot.error(err);
         return ":x: Uh-oh, something went wrong";
