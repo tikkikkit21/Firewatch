@@ -53,7 +53,12 @@ module.exports.execute = async function (interaction) {
 }
 
 /**
- * Checks if a time string is valid syntax
+ * Checks if a time string is valid syntax. The following syntaxes are valid:
+ * - 24-hour format (ex: "4:07", "16:32", "07:14")
+ * - 12-hour format (ex: "7:03am", "5:48pm")
+ * - 12-hour format with space (ex: "7:03 am", "5:48 pm")
+ * 
+ * All formats support optional zero-padding
  * @param {string} timeString time in string format
  * @returns {boolean} whether provided string is a valid time
  */
