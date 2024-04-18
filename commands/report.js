@@ -41,7 +41,7 @@ module.exports.execute = async function (interaction) {
             range: `${hall}!A${rowLength + 1}:F${rowLength + 1}`,
             valueInputOption: "USER_ENTERED",
             resource: {
-                values: [[`${formattedDate} ${time}`, "y", comments, "", "n", ""]]
+                values: [[`${formattedDate} ${time}`, "y", comments, "", "n", "Reported via Discord bot"]]
             },
         });
 
