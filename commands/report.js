@@ -1,26 +1,26 @@
-const { GoogleAuth } = require('google-auth-library');
-const { google } = require('googleapis');
+const { GoogleAuth } = require("google-auth-library");
+const { google } = require("googleapis");
 
 const auth = new GoogleAuth({
     keyFile: "credentials.json",
-    scopes: 'https://www.googleapis.com/auth/spreadsheets',
+    scopes: "https://www.googleapis.com/auth/spreadsheets",
 });
 
-const service = google.sheets({ version: 'v4', auth });
+const service = google.sheets({ version: "v4", auth });
 
 module.exports.execute = async function (interaction) {
     // extract arguments
     const hall = interaction.data.options?.[0]?.value;
     const time = interaction.data.options?.[1]?.value;
-    const comments = interaction.data.options?.[2]?.value || '';
+    const comments = interaction.data.options?.[2]?.value || "";
 
     // verify provided time string is valid
     if (!validateTime(time)) return ":x: Invalid time format";
 
-    // get today's date as mm/dd/yyyy with zero-padded numbers
+    // get today"s date as mm/dd/yyyy with zero-padded numbers
     const today = new Date();
-    const day = String(today.getDate()).padStart(2, '0');
-    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, "0");
+    const month = String(today.getMonth() + 1).padStart(2, "0");
     const year = today.getFullYear();
     const formattedDate = `${month}/${day}/${year}`;
 
@@ -41,7 +41,7 @@ module.exports.execute = async function (interaction) {
             range: `${hall}!A${rowLength + 1}:F${rowLength + 1}`,
             valueInputOption: "USER_ENTERED",
             resource: {
-                values: [[`${formattedDate} ${time}`, 'y', comments, '', 'n', '']]
+                values: [[`${formattedDate} ${time}`, "y", comments, "", "n", ""]]
             },
         });
 
