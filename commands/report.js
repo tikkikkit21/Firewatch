@@ -9,11 +9,20 @@ const auth = new GoogleAuth({
 const service = google.sheets({ version: 'v4', auth });
 
 module.exports.execute = async function (interaction) {
+    // extract arguments
     const hall = interaction.data.options?.[0]?.value;
     const time = interaction.data.options?.[1]?.value;
-    const comments = interaction.data.options?.[2]?.value;
+    const comments = interaction.data.options?.[2]?.value || '';
+
+    // get today's date as mm/dd/yyyy with zero-padded numbers
+    const today = new Date();
+    const day = String(today.getDate()).padStart(2, '0');
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const year = today.getFullYear();
+    const formattedDate = `${month}/${day}/${year}`;
 
     try {
+        // get current rows in the sheet that corresponds to the hall
         const result = await service.spreadsheets.values.get({
             spreadsheetId: process.env.SHEET_ID,
             range: hall
@@ -23,14 +32,13 @@ module.exports.execute = async function (interaction) {
 
         if (!rowLength) return ":x: Failed to update spreadsheet";
 
-        console.log("result.data:", result.data);
-
-        await service.spreadsheets.values.update({
+        // add a new row with user reported data
+        service.spreadsheets.values.update({
             spreadsheetId: process.env.SHEET_ID,
             range: `${hall}!A${rowLength + 1}:F${rowLength + 1}`,
             valueInputOption: "USER_ENTERED",
             resource: {
-                values: [['04/17/24 18:50', 'this', 'is', 'a', 'test', '']]
+                values: [[`${formattedDate} ${time}`, 'y', comments, '', 'n', '']]
             },
         });
 
