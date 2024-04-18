@@ -82,19 +82,30 @@ module.exports.options = [
         type: 3,
         required: true,
         choices: [
-            {
-                name: "Ambler Johnston",
-                value: "AJ"
-            },
-            {
-                name: "Campbell",
-                value: "Campbell"
-            },
-            {
-                name: "Cochrane",
-                value: "Cochrane"
-            },
-            // TODO: add remaining halls
+            { name: "Ambler Johnston", value: "AJ" },
+            { name: "Campbell", value: "Campbell" },
+            { name: "Cochrane", value: "Cochrane" },
+            { name: "CID", value: "CID" },
+            { name: "Eggleston", value: "Eggleston" },
+            { name: "GLC", value: "GLC" },
+            { name: "Harper", value: "Harper" },
+            { name: "Hillcrest", value: "Hillcrest" },
+            { name: "Hoge", value: "Hoge" },
+            { name: "Johnson", value: "Johnson" },
+            { name: "Miles", value: "Miles" },
+            { name: "New Residence Hall East", value: "New Hall East" },
+            { name: "New Hall West", value: "New Hall West" },
+            { name: "Newman", value: "Newman" },
+            { name: "O'Shaughnessy", value: "O Shag" },
+            { name: "Payne", value: "Payne" },
+            { name: "Pearson East", value: "Pearson East" },
+            { name: "Pearson West", value: "Pearson West" },
+            { name: "Peddrew-Yates", value: "Peddrew-Yates" },
+            { name: "Pritchard", value: "Pritchard" },
+            { name: "Slusher", value: "Slusher" },
+            { name: "Upper Quad North", value: "UpperQuadNorth" },
+            { name: "Vawter", value: "Vawter" },
+            { name: "Whitehurst", value: "Whitehurst" }
         ]
     },
     {
