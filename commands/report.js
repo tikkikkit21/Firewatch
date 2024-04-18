@@ -109,7 +109,7 @@ module.exports.options = [
     },
     {
         name: "time",
-        description: "when did the fire alarm go off? (24-hour format please, ex: 16:00)",
+        description: "when did the fire alarm go off?",
         type: 3,
         required: true
     },
