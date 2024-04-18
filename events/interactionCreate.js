@@ -1,21 +1,21 @@
-const Eris = require("eris");
+const { Interaction, CommandInteraction, ComponentInteraction } = require("eris");
 const Firewatch = require("../Firewatch");
 
 /**
  * @param {Firewatch} bot Firewatch client object
- * @param {Eris.Interaction} interaction Interaction object
+ * @param {Interaction} interaction Interaction object
  */
 module.exports = async (bot, interaction) => {
     try {
         // slash commands
-        if (interaction instanceof Eris.CommandInteraction) {
+        if (interaction instanceof CommandInteraction) {
             return await handleSlashCommand(bot, interaction);
         }
 
         // buttons
-        else if (interaction instanceof Eris.ComponentInteraction) {
-            return await handleButton(bot, interaction);
-        }
+        // else if (interaction instanceof ComponentInteraction) {
+        //     return await handleButton(bot, interaction);
+        // }
     } catch (error) {
         bot.error(error);
     }
@@ -24,7 +24,7 @@ module.exports = async (bot, interaction) => {
 /**
  * Handles slash commands
  * @param {Firewatch} bot Firewatch client object
- * @param {Eris.CommandInteraction} interaction Interaction object for slash command
+ * @param {CommandInteraction} interaction Interaction object for slash command
  * @returns awaitable interaction response
  */
 async function handleSlashCommand(bot, interaction) {
@@ -52,27 +52,27 @@ async function handleSlashCommand(bot, interaction) {
 /**
  * Handles buttons
  * @param {RebirthRusher} bot base class of RbR
- * @param {Eris.ComponentInteraction} interaction Interaction object for button
+ * @param {ComponentInteraction} interaction Interaction object for button
  * @returns awaitable RbR response
  */
-async function handleButton(bot, interaction) {
-    try {
-        // button IDs are in the format "[user_id]-[button_id]" to make sure the
-        // user clicking the button is the intended user (prevents other users
-        // from clicking your buttons and messing you up)
-        const args = interaction.data.custom_id.split("-");
-        const userID = args[0];
-        const command = args[1];
+// async function handleButton(bot, interaction) {
+//     try {
+//         // button IDs are in the format "[user_id]-[button_id]" to make sure the
+//         // user clicking the button is the intended user (prevents other users
+//         // from clicking your buttons and messing you up)
+//         const args = interaction.data.custom_id.split("-");
+//         const userID = args[0];
+//         const command = args[1];
 
-        if (interaction.member.user.id === userID) {
-            await interaction.acknowledge();
-            switch (command) {
-                // handle different button ids
-            }
-        }
+//         if (interaction.member.user.id === userID) {
+//             await interaction.acknowledge();
+//             switch (command) {
+//                 // handle different button ids
+//             }
+//         }
 
-        return bot.error(new Error(`Unhandled ComponentInteraction: ${interaction.data.custom_id}`));
-    } catch (error) {
-        return bot.error(error);
-    }
-}
+//         return bot.error(new Error(`Unhandled ComponentInteraction: ${interaction.data.custom_id}`));
+//     } catch (error) {
+//         return bot.error(error);
+//     }
+// }
