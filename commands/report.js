@@ -46,7 +46,7 @@ module.exports.execute = async function (interaction) {
         });
 
         console.info(`${today.toISOString()} [${interaction.member.user.id}] reported [${hall}]`);
-        return `:white_check_mark: Fire alarm reported at: \`${hall}\`. Thank you!`;
+        return `:white_check_mark: Fire alarm reported at: \`${hall}\` on \`${formattedDate} ${time}\`. Thank you!`;
     } catch (err) {
         bot.error(err);
         return ":x: Uh-oh, something went wrong";
