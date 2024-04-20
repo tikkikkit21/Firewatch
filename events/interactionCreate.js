@@ -13,9 +13,9 @@ module.exports = async (bot, interaction) => {
         }
 
         // buttons
-        // else if (interaction instanceof ComponentInteraction) {
-        //     return await handleButton(bot, interaction);
-        // }
+        else if (interaction instanceof ComponentInteraction) {
+            return await handleButton(bot, interaction);
+        }
     } catch (error) {
         bot.error(error);
     }
@@ -39,6 +39,13 @@ async function handleSlashCommand(bot, interaction) {
         if (command) {
             const result = await bot.commands.get(interaction.data.name).execute(interaction);
 
+            // handle kill command
+            if (command.name === "kill") {
+                setTimeout(() => {
+                    interaction.editOriginalMessage({ content: "Time's up, operation was cancelled", components: [] })
+                }, 15000);
+            }
+
             return interaction.createMessage(result, result?.file);
         }
 
@@ -55,24 +62,27 @@ async function handleSlashCommand(bot, interaction) {
  * @param {ComponentInteraction} interaction Interaction object for button
  * @returns awaitable RbR response
  */
-// async function handleButton(bot, interaction) {
-//     try {
-//         // button IDs are in the format "[user_id]-[button_id]" to make sure the
-//         // user clicking the button is the intended user (prevents other users
-//         // from clicking your buttons and messing you up)
-//         const args = interaction.data.custom_id.split("-");
-//         const userID = args[0];
-//         const command = args[1];
+async function handleButton(bot, interaction) {
+    try {
+        await interaction.acknowledge();
+        const args = interaction.data.custom_id.split("-");
+        const command = args[0];
+        const arg = args[1];
 
-//         if (interaction.member.user.id === userID) {
-//             await interaction.acknowledge();
-//             switch (command) {
-//                 // handle different button ids
-//             }
-//         }
+        switch (command) {
+            case "kill":
+                if (arg === "confirm") {
+                    console.info("Bot shut down");
+                    await interaction.editMessage(interaction.message.id, { content: "Bot shut down", components: [] });
+                    return process.exit();
+                }
+                else if (arg === "cancel") {
+                    return interaction.editMessage(interaction.message.id, { content: "Operation cancelled", components: [] });
+                }
+        }
 
-//         return bot.error(new Error(`Unhandled ComponentInteraction: ${interaction.data.custom_id}`));
-//     } catch (error) {
-//         return bot.error(error);
-//     }
-// }
+        return bot.error(new Error(`Unhandled ComponentInteraction: ${interaction.data.custom_id}`));
+    } catch (error) {
+        return bot.error(error);
+    }
+}
