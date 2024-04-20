@@ -9,19 +9,20 @@ const auth = new GoogleAuth({
 const service = google.sheets({ version: "v4", auth });
 
 module.exports.execute = async function (interaction) {
+    const now = new Date();
     // extract arguments
     const hall = interaction.data.options?.[0]?.value;
-    const time = interaction.data.options?.[1]?.value;
+    const time = interaction.data.options?.[1]?.value
+        || `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
     const comments = interaction.data.options?.[2]?.value || "";
 
     // verify provided time string is valid
     if (!validateTime(time)) return ":no_entry_sign: Invalid time format";
 
     // get today"s date as mm/dd/yyyy with zero-padded numbers
-    const today = new Date();
-    const day = String(today.getDate()).padStart(2, "0");
-    const month = String(today.getMonth() + 1).padStart(2, "0");
-    const year = today.getFullYear();
+    const day = String(now.getDate()).padStart(2, "0");
+    const month = String(now.getMonth() + 1).padStart(2, "0");
+    const year = now.getFullYear();
     const formattedDate = `${month}/${day}/${year}`;
 
     try {
@@ -45,7 +46,7 @@ module.exports.execute = async function (interaction) {
             },
         });
 
-        console.info(`${today.toISOString()} [${interaction.member.user.id}] reported [${hall}]`);
+        console.info(`${now.toISOString()} [${interaction.member.user.id}] reported [${hall}]`);
         return `:white_check_mark: Fire alarm reported at: \`${hall}\` on \`${formattedDate} ${time}\`. Thank you!`;
     } catch (err) {
         bot.error(err);
@@ -111,8 +112,7 @@ module.exports.options = [
     {
         name: "time",
         description: "when did the fire alarm go off?",
-        type: 3,
-        required: true
+        type: 3
     },
     {
         name: "comments",
