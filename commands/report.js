@@ -30,6 +30,12 @@ module.exports.execute = async function (interaction) {
     if (!time) return ":no_entry_sign: Invalid time format, needs to be 24-hour format (ex: `21:03`)";
     if (!date) return ":no_entry_sign: Invalid date format, needs to be mm/dd/yyyy (ex: `3/15/2020`)";
 
+    // if date in future, turn back by 1 day (handles midnight cases)
+    const isFuture = timestamp > new Date();
+    if (isFuture) {
+        timestamp.setDate(timestamp.getDate() - 1);
+    }
+
     try {
         // get current rows in the sheet that corresponds to the hall
         const result = await service.spreadsheets.values.get({
@@ -52,7 +58,8 @@ module.exports.execute = async function (interaction) {
         });
 
         console.info(`${formatTimestamp(timestamp)} [${interaction.member.user.id}] reported [${hallArg}]`);
-        return `:white_check_mark: Fire alarm reported at: \`${hallArg}\` on \`${formatTimestamp(timestamp)}\`. Thank you!`;
+        return `:white_check_mark: Fire alarm reported at: \`${hallArg}\` on \`${formatTimestamp(timestamp)}\`. Thank you!`
+            + (isFuture ? "\n*Note: date was set to yesterday since the time you provided is in the future*" : "");
     } catch (err) {
         bot.error(err);
         return ":x: Uh-oh, something went wrong";
