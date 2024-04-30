@@ -112,7 +112,12 @@ module.exports.options = [
     },
     {
         name: "time",
-        description: "when did the fire alarm go off? (use 24-hour format)",
+        description: "what time did the fire alarm go off? (use 24-hour format)",
+        type: 3
+    },
+    {
+        name: "date",
+        description: "what day did the fire alarm go off? (use mm/dd format)",
         type: 3
     },
     {
