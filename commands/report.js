@@ -12,10 +12,10 @@ module.exports.execute = async function (interaction) {
     if (!interaction.data.options) return ":question: Strange...no arguments received";
 
     // extract arguments
-    const hallArg = interaction.data.options.find(o => o.name === "hall");
-    const timeArg = interaction.data.options.find(o => o.name === "time");
-    const dateArg = interaction.data.options.find(o => o.name === "date");
-    const commentsArg = interaction.data.options.find(o => o.name === "comments");
+    const hallArg = interaction.data.options.find(o => o.name === "hall")?.value;
+    const timeArg = interaction.data.options.find(o => o.name === "time")?.value;
+    const dateArg = interaction.data.options.find(o => o.name === "date")?.value;
+    const commentsArg = interaction.data.options.find(o => o.name === "comments")?.value;
 
     // parse arguments
     const timestamp = new Date();
@@ -36,6 +36,10 @@ module.exports.execute = async function (interaction) {
     const year = timestamp.getFullYear();
     const formattedDate = `${month}/${day}/${year}`;
 
+    const hour = String(timestamp.getHours()).padStart(2, "0");
+    const minute = String(timestamp.getMinutes()).padStart(2, "0");
+    const formattedTime = `${hour}:${minute}`;
+
     try {
         // get current rows in the sheet that corresponds to the hall
         const result = await service.spreadsheets.values.get({
@@ -53,12 +57,12 @@ module.exports.execute = async function (interaction) {
             range: `${hallArg}!A${rowLength + 1}:F${rowLength + 1}`,
             valueInputOption: "USER_ENTERED",
             resource: {
-                values: [[`${formattedDate} ${time}`, "y", commentsArg, "", "n", "Reported via Discord bot"]]
+                values: [[`${formattedDate} ${formattedTime}`, "y", commentsArg, "", "n", "Reported via Discord bot"]]
             },
         });
 
         console.info(`${timestamp.toISOString()} [${interaction.member.user.id}] reported [${hallArg}]`);
-        return `:white_check_mark: Fire alarm reported at: \`${hallArg}\` on \`${formattedDate} ${time}\`. Thank you!`;
+        return `:white_check_mark: Fire alarm reported at: \`${hallArg}\` on \`${formattedDate} ${formattedTime}\`. Thank you!`;
     } catch (err) {
         bot.error(err);
         return ":x: Uh-oh, something went wrong";
