@@ -40,7 +40,7 @@ module.exports.execute = async function (interaction) {
         // get current rows in the sheet that corresponds to the hall
         const result = await service.spreadsheets.values.get({
             spreadsheetId: process.env.SHEET_ID,
-            range: hall
+            range: hallArg
         });
 
         const rowLength = result.data.values?.length;
@@ -50,15 +50,15 @@ module.exports.execute = async function (interaction) {
         // add a new row with user reported data
         service.spreadsheets.values.update({
             spreadsheetId: process.env.SHEET_ID,
-            range: `${hall}!A${rowLength + 1}:F${rowLength + 1}`,
+            range: `${hallArg}!A${rowLength + 1}:F${rowLength + 1}`,
             valueInputOption: "USER_ENTERED",
             resource: {
-                values: [[`${formattedDate} ${time}`, "y", comments, "", "n", "Reported via Discord bot"]]
+                values: [[`${formattedDate} ${time}`, "y", commentsArg, "", "n", "Reported via Discord bot"]]
             },
         });
 
-        console.info(`${timestamp.toISOString()} [${interaction.member.user.id}] reported [${hall}]`);
-        return `:white_check_mark: Fire alarm reported at: \`${hall}\` on \`${formattedDate} ${time}\`. Thank you!`;
+        console.info(`${timestamp.toISOString()} [${interaction.member.user.id}] reported [${hallArg}]`);
+        return `:white_check_mark: Fire alarm reported at: \`${hallArg}\` on \`${formattedDate} ${time}\`. Thank you!`;
     } catch (err) {
         bot.error(err);
         return ":x: Uh-oh, something went wrong";
