@@ -55,23 +55,24 @@ module.exports.execute = async function (interaction) {
 }
 
 /**
- * Checks if a time string is valid syntax. The following syntaxes are valid:
- * - 24-hour format (ex: "4:07", "16:32", "07:14")
- * - 12-hour format (ex: "7:03am", "5:48pm")
- * - 12-hour format with space (ex: "7:03 am", "5:48 pm")
- * 
- * All formats support optional zero-padding
+ * Checks if a time string is valid 24-hour syntax. If valid, it will convert
+ * it into a date object with today's date
  * @param {string} timeString time in string format
- * @returns {boolean} whether provided string is a valid time
+ * @returns Date object if valid or null if invalid
  */
 function validateTime(timeString) {
     const hhmm = /^([0-1]?[0-9]|2[0-3]):([0-5][0-9])$/;
-    const am_pm = /^(1[0-2]|0?[1-9]):([0-5][0-9]) ?(am|pm)$/;
-    const a_p = /^(1[0-2]|0?[1-9]):([0-5][0-9]) ?(a|p)$/;
+    if (hhmm.test(timeString)) {
+        const [hours, minutes] = timeString.split(":").map(Number);
 
-    return hhmm.test(timeString)
-        || am_pm.test(timeString)
-        || a_p.test(timeString);
+        const today = new Date();
+        today.setHours(hours);
+        today.setMinutes(minutes);
+
+        return today;
+    }
+
+    return null;
 }
 
 module.exports.name = "report";
@@ -111,7 +112,7 @@ module.exports.options = [
     },
     {
         name: "time",
-        description: "when did the fire alarm go off?",
+        description: "when did the fire alarm go off? (use 24-hour format)",
         type: 3
     },
     {
