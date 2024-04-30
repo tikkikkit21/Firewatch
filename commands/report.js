@@ -30,16 +30,6 @@ module.exports.execute = async function (interaction) {
     if (!time) return ":no_entry_sign: Invalid time format, needs to be 24-hour format (ex: `21:03`)";
     if (!date) return ":no_entry_sign: Invalid date format, needs to be mm/dd/yyyy (ex: `3/15/2020`)";
 
-    // get today's date as mm/dd/yyyy with zero-padded numbers
-    const day = String(timestamp.getDate()).padStart(2, "0");
-    const month = String(timestamp.getMonth() + 1).padStart(2, "0");
-    const year = timestamp.getFullYear();
-    const formattedDate = `${month}/${day}/${year}`;
-
-    const hour = String(timestamp.getHours()).padStart(2, "0");
-    const minute = String(timestamp.getMinutes()).padStart(2, "0");
-    const formattedTime = `${hour}:${minute}`;
-
     try {
         // get current rows in the sheet that corresponds to the hall
         const result = await service.spreadsheets.values.get({
@@ -57,12 +47,12 @@ module.exports.execute = async function (interaction) {
             range: `${hallArg}!A${rowLength + 1}:F${rowLength + 1}`,
             valueInputOption: "USER_ENTERED",
             resource: {
-                values: [[`${formattedDate} ${formattedTime}`, "y", commentsArg, "", "n", "Reported via Discord bot"]]
+                values: [[formatTimestamp(timestamp), "y", commentsArg, "", "n", "Reported via Discord bot"]]
             },
         });
 
-        console.info(`${timestamp.toISOString()} [${interaction.member.user.id}] reported [${hallArg}]`);
-        return `:white_check_mark: Fire alarm reported at: \`${hallArg}\` on \`${formattedDate} ${formattedTime}\`. Thank you!`;
+        console.info(`${formatTimestamp(timestamp)} [${interaction.member.user.id}] reported [${hallArg}]`);
+        return `:white_check_mark: Fire alarm reported at: \`${hallArg}\` on \`${formatTimestamp(timestamp)}\`. Thank you!`;
     } catch (err) {
         bot.error(err);
         return ":x: Uh-oh, something went wrong";
@@ -109,6 +99,24 @@ function validateDate(dateString, time) {
     }
 
     return null;
+}
+
+/**
+ * Converts a Date object into a nicely formatted string with date and time
+ * @param {Date} timestamp date object to format
+ * @returns string in the format "mm/dd/yyyy hh:mm"
+ */
+function formatTimestamp(timestamp) {
+    const day = String(timestamp.getDate()).padStart(2, "0");
+    const month = String(timestamp.getMonth() + 1).padStart(2, "0");
+    const year = timestamp.getFullYear();
+    const formattedDate = `${month}/${day}/${year}`;
+
+    const hour = String(timestamp.getHours()).padStart(2, "0");
+    const minute = String(timestamp.getMinutes()).padStart(2, "0");
+    const formattedTime = `${hour}:${minute}`;
+
+    return `${formattedDate} ${formattedTime}`;
 }
 
 module.exports.name = "report";
