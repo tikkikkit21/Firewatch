@@ -20,10 +20,10 @@ module.exports.execute = async function (interaction) {
     // parse arguments
     const timestamp = new Date();
     const time = timeArg
-        ? validateTime(time, timestamp)
+        ? validateTime(timeArg, timestamp)
         : timestamp;
     const date = dateArg
-        ? validateDate(date, timestamp)
+        ? validateDate(dateArg, timestamp)
         : timestamp;
 
     // verify provided time/date strings are valid
@@ -87,11 +87,10 @@ function validateTime(timeString, time) {
  * @returns Date object if valid or null if invalid
  */
 function validateDate(dateString, time) {
-    const date = /^(0[1-9]|1[0-2])\/(0[1-9]|[12][0-9]|3[01])\/\d{4}$/;;
+    const date = /^(0?[1-9]|1[0-2])\/(0?[1-9]|[12][0-9]|3[01])\/\d{4}$/;
     if (date.test(dateString)) {
         const [month, day, year] = dateString.split("/").map(Number);
-
-        time.setMonth(month);
+        time.setMonth(month - 1);
         time.setDate(day);
         time.setFullYear(year);
 
@@ -107,8 +106,8 @@ function validateDate(dateString, time) {
  * @returns string in the format "mm/dd/yyyy hh:mm"
  */
 function formatTimestamp(timestamp) {
-    const day = String(timestamp.getDate()).padStart(2, "0");
     const month = String(timestamp.getMonth() + 1).padStart(2, "0");
+    const day = String(timestamp.getDate()).padStart(2, "0");
     const year = timestamp.getFullYear();
     const formattedDate = `${month}/${day}/${year}`;
 
