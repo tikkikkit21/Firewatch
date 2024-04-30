@@ -57,7 +57,7 @@ module.exports.execute = async function (interaction) {
             },
         });
 
-        console.info(`${formatTimestamp(timestamp)} [${interaction.member.user.id}] reported [${hallArg}]`);
+        console.info(`${(new Date()).toISOString()} [${interaction.member.user.id}] reported [${hallArg}]`);
         return `:white_check_mark: Fire alarm reported at: \`${hallArg}\` on \`${formatTimestamp(timestamp)}\`. Thank you!`
             + (isFuture ? "\n*Note: date was set to yesterday since the time you provided is in the future*" : "");
     } catch (err) {
