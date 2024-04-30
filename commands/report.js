@@ -9,20 +9,31 @@ const auth = new GoogleAuth({
 const service = google.sheets({ version: "v4", auth });
 
 module.exports.execute = async function (interaction) {
-    const now = new Date();
+    if (!interaction.data.options) return ":question: Strange...no arguments received";
+
     // extract arguments
-    const hall = interaction.data.options?.[0]?.value;
-    const time = interaction.data.options?.[1]?.value
-        || `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
-    const comments = interaction.data.options?.[2]?.value || "";
+    const hallArg = interaction.data.options.find(o => o.name === "hall");
+    const timeArg = interaction.data.options.find(o => o.name === "time");
+    const dateArg = interaction.data.options.find(o => o.name === "date");
+    const commentsArg = interaction.data.options.find(o => o.name === "comments");
 
-    // verify provided time string is valid
-    if (!validateTime(time)) return ":no_entry_sign: Invalid time format";
+    // parse arguments
+    const timestamp = new Date();
+    const time = timeArg
+        ? validateTime(time, timestamp)
+        : timestamp;
+    const date = dateArg
+        ? validateDate(date, timestamp)
+        : timestamp;
 
-    // get today"s date as mm/dd/yyyy with zero-padded numbers
-    const day = String(now.getDate()).padStart(2, "0");
-    const month = String(now.getMonth() + 1).padStart(2, "0");
-    const year = now.getFullYear();
+    // verify provided time/date strings are valid
+    if (!time) return ":no_entry_sign: Invalid time format, needs to be 24-hour format (ex: `21:03`)";
+    if (!date) return ":no_entry_sign: Invalid date format, needs to be mm/dd/yyyy (ex: `3/15/2020`)";
+
+    // get today's date as mm/dd/yyyy with zero-padded numbers
+    const day = String(timestamp.getDate()).padStart(2, "0");
+    const month = String(timestamp.getMonth() + 1).padStart(2, "0");
+    const year = timestamp.getFullYear();
     const formattedDate = `${month}/${day}/${year}`;
 
     try {
@@ -46,7 +57,7 @@ module.exports.execute = async function (interaction) {
             },
         });
 
-        console.info(`${now.toISOString()} [${interaction.member.user.id}] reported [${hall}]`);
+        console.info(`${timestamp.toISOString()} [${interaction.member.user.id}] reported [${hall}]`);
         return `:white_check_mark: Fire alarm reported at: \`${hall}\` on \`${formattedDate} ${time}\`. Thank you!`;
     } catch (err) {
         bot.error(err);
@@ -58,18 +69,39 @@ module.exports.execute = async function (interaction) {
  * Checks if a time string is valid 24-hour syntax. If valid, it will convert
  * it into a date object with today's date
  * @param {string} timeString time in string format
+ * @param {Date} time time object to update
  * @returns Date object if valid or null if invalid
  */
-function validateTime(timeString) {
+function validateTime(timeString, time) {
     const hhmm = /^([0-1]?[0-9]|2[0-3]):([0-5][0-9])$/;
     if (hhmm.test(timeString)) {
         const [hours, minutes] = timeString.split(":").map(Number);
 
-        const today = new Date();
-        today.setHours(hours);
-        today.setMinutes(minutes);
+        time.setHours(hours);
+        time.setMinutes(minutes);
 
-        return today;
+        return time;
+    }
+
+    return null;
+}
+
+/**
+ * Checks if a date format is proper mm/dd/yyyy
+ * @param {string} dateString date in string format
+ * @param {Date} time time object to update
+ * @returns Date object if valid or null if invalid
+ */
+function validateDate(dateString, time) {
+    const date = /^(0[1-9]|1[0-2])\/(0[1-9]|[12][0-9]|3[01])\/\d{4}$/;;
+    if (date.test(dateString)) {
+        const [month, day, year] = dateString.split("/").map(Number);
+
+        time.setMonth(month);
+        time.setDate(day);
+        time.setFullYear(year);
+
+        return time;
     }
 
     return null;
@@ -117,7 +149,7 @@ module.exports.options = [
     },
     {
         name: "date",
-        description: "what day did the fire alarm go off? (use mm/dd format)",
+        description: "what day did the fire alarm go off? (use mm/dd/yyyy format)",
         type: 3
     },
     {
