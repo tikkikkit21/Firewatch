@@ -1,3 +1,4 @@
+const { CommandInteraction } = require("eris");
 const { GoogleAuth } = require("google-auth-library");
 const { google } = require("googleapis");
 
@@ -8,6 +9,11 @@ const auth = new GoogleAuth({
 
 const service = google.sheets({ version: "v4", auth });
 
+/**
+ * Reports a fire and logs it in the Google sheets
+ * @param {CommandInteraction} interaction slash command object
+ * @returns message for replying to the interaction
+ */
 module.exports.execute = async function (interaction) {
     if (!interaction.data.options) return ":question: Strange...no arguments received";
 
