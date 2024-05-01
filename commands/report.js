@@ -9,6 +9,10 @@ const auth = new GoogleAuth({
 
 const service = google.sheets({ version: "v4", auth });
 
+// if 2 records are within this time, it's considered 1 report
+// currently at 5 minutes
+const MIN_TIME_DIFF = 5 * 60 * 1000;
+
 /**
  * Reports a fire and logs it in the Google sheets
  * @param {CommandInteraction} interaction slash command object
@@ -52,6 +56,11 @@ module.exports.execute = async function (interaction) {
         const rowLength = result.data.values?.length;
 
         if (!rowLength) return ":x: Failed to update spreadsheet";
+
+        const recentTimestamp = new Date(result.data.values[rowLength - 1][0]);
+        if (Math.abs(recentTimestamp - timestamp) <= MIN_TIME_DIFF) {
+            return `:alarm_clock: Already received a report for \`${hallArg}\` at \`${formatTimestamp(recentTimestamp)}\``;
+        }
 
         // add a new row with user reported data
         service.spreadsheets.values.update({
