@@ -102,8 +102,25 @@ module.exports.execute = async function (interaction) {
         fs.writeFileSync("./user_reports.json", JSON.stringify(cooldowns, null, 4));
 
         console.info(`${(new Date()).toISOString()} [${interaction.member.user.id}] reported [${hallArg}]`);
-        return `:white_check_mark: Fire alarm reported at: \`${hallArg}\` on \`${formatTimestamp(timestamp)}\`. Thank you!`
+        const message = `:fire: Fire alarm reported at: \`${hallArg}\` on \`${formatTimestamp(timestamp)}\`. Thank you!`
             + (isFuture ? "\n*Note: date was set to yesterday since the time you provided is in the future*" : "");
+
+        return {
+            content: message,
+            components: [
+                {
+                    type: 1,
+                    components: [
+                        {
+                            type: 2,
+                            style: 3,
+                            custom_id: `report-${hallArg}-${rowLength}`,
+                            label: "Confirm report"
+                        }
+                    ]
+                }
+            ]
+        }
     } catch (err) {
         bot.error(err);
         return ":x: Uh-oh, something went wrong";
