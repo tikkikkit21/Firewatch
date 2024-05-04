@@ -13,5 +13,8 @@
     "dotenv": "^16.4.5",
     "eris": "^0.17.2",
     "googleapis": "^134.0.0"
+  },
+  "nodemonConfig": {
+    "ignore": ["*.json", "*.log"]
   }
 }
