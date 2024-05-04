@@ -38,8 +38,10 @@ module.exports.execute = async function (interaction) {
         .filter(t => Math.abs(new Date(t) - timestamp) < COOLDOWN)
         .length;
     if (numReports >= 5) {
+        const credentials = JSON.parse(fs.readFileSync("./credentials.json"));
+        const roleID = credentials.role;
         blacklist.push(interaction.member.user.id);
-        return "You've made 5 reports in the last 24h, take a chill pill :pill:";
+        return `<@&${roleID}> You've made 5 reports in the last 24h, take a chill pill :pill:\n`;
     }
 
     // extract arguments
