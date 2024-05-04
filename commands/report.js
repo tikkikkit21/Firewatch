@@ -16,7 +16,6 @@ const MIN_TIME_DIFF = 5 * 60 * 1000;
 
 // cooldown tracking
 const COOLDOWN = 24 * 60 * 60 * 1000;
-const blacklist = [];
 
 /**
  * Reports a fire and logs it in the Google sheets
@@ -24,7 +23,6 @@ const blacklist = [];
  * @returns message for replying to the interaction
  */
 module.exports.execute = async function (interaction) {
-    if (blacklist.includes[interaction.member.user.id]) return;
     if (!interaction.data.options) return ":question: Strange...no arguments received";
 
     const timestamp = new Date();
@@ -38,9 +36,14 @@ module.exports.execute = async function (interaction) {
         .filter(t => Math.abs(new Date(t) - timestamp) < COOLDOWN)
         .length;
     if (numReports >= 5) {
+        // add user to blacklist
+        const blacklist = JSON.parse(fs.readFileSync("./blacklist.json"));
+        blacklist.push(interaction.member.user.id);
+        fs.writeFileSync("./blacklist.json", JSON.stringify(blacklist, null, 4));
+
+        // ping admin role
         const credentials = JSON.parse(fs.readFileSync("./credentials.json"));
         const roleID = credentials.role;
-        blacklist.push(interaction.member.user.id);
         return `<@&${roleID}> You've made 5 reports in the last 24h, take a chill pill :pill:\n`;
     }
 

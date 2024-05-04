@@ -1,5 +1,9 @@
+# development
 node_modules
 .env
 errors.log
+
+# config files
 credentials.json
 user_reports.json
+blacklist.json

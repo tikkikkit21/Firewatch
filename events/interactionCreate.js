@@ -1,3 +1,4 @@
+const fs = require("fs");
 const { Interaction, CommandInteraction, ComponentInteraction } = require("eris");
 const Firewatch = require("../Firewatch");
 
@@ -7,6 +8,10 @@ const Firewatch = require("../Firewatch");
  */
 module.exports = async (bot, interaction) => {
     try {
+        // ignore users on blacklist
+        const blacklist = JSON.parse(fs.readFileSync("./blacklist.json"));
+        if (blacklist.includes(interaction.member.user.id)) return;
+
         // slash commands
         if (interaction instanceof CommandInteraction) {
             return await handleSlashCommand(bot, interaction);
