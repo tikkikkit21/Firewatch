@@ -39,14 +39,16 @@ async function handleSlashCommand(bot, interaction) {
         if (command) {
             const result = await bot.commands.get(interaction.data.name).execute(interaction);
 
-            // handle kill command
-            if (command.name === "kill") {
-                setTimeout(() => {
-                    interaction.editOriginalMessage({ content: "Time's up, operation was cancelled", components: [] })
-                }, 15000);
-            }
+            if (result) {
+                // handle kill command
+                if (command.name === "kill") {
+                    setTimeout(() => {
+                        interaction.editOriginalMessage({ content: "Time's up, operation was cancelled", components: [] })
+                    }, 15000);
+                }
 
-            return interaction.createMessage(result, result?.file);
+                return interaction.createMessage(result, result?.file);
+            }
         }
 
         // unhandled interaction at this point

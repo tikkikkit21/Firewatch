@@ -1,6 +1,7 @@
 const { CommandInteraction } = require("eris");
 const { GoogleAuth } = require("google-auth-library");
 const { google } = require("googleapis");
+const fs = require("fs");
 
 const auth = new GoogleAuth({
     keyFile: "credentials.json",
@@ -13,6 +14,9 @@ const service = google.sheets({ version: "v4", auth });
 // currently at 5 minutes
 const MIN_TIME_DIFF = 5 * 60 * 1000;
 
+// cooldown tracking
+const COOLDOWN = 24 * 60 * 60 * 1000;
+
 /**
  * Reports a fire and logs it in the Google sheets
  * @param {CommandInteraction} interaction slash command object
@@ -20,6 +24,20 @@ const MIN_TIME_DIFF = 5 * 60 * 1000;
  */
 module.exports.execute = async function (interaction) {
     if (!interaction.data.options) return ":question: Strange...no arguments received";
+    const timestamp = new Date();
+    const cooldowns = JSON.parse(fs.readFileSync("./user_reports.json"));
+
+    // check cooldown
+    if (!cooldowns[interaction.member.user.id]) cooldowns[interaction.member.user.id] = [];
+    const numReports = cooldowns[interaction.member.user.id]
+        .slice()
+        .reverse()
+        .filter(t => Math.abs(new Date(t) - timestamp) < COOLDOWN)
+        .length;
+    if (numReports >= 5) {
+        console.log("greater than");
+        return;
+    }
 
     // extract arguments
     const hallArg = interaction.data.options.find(o => o.name === "hall")?.value;
@@ -28,7 +46,6 @@ module.exports.execute = async function (interaction) {
     const commentsArg = interaction.data.options.find(o => o.name === "comments")?.value;
 
     // parse arguments
-    const timestamp = new Date();
     const time = timeArg
         ? validateTime(timeArg, timestamp)
         : timestamp;
@@ -71,6 +88,10 @@ module.exports.execute = async function (interaction) {
                 values: [[formatTimestamp(timestamp), "y", commentsArg, "", "n", "Reported via Discord bot"]]
             },
         });
+
+        // log report
+        cooldowns[interaction.member.user.id].push(timestamp);
+        fs.writeFileSync("./user_reports.json", JSON.stringify(cooldowns, null, 4));
 
         console.info(`${(new Date()).toISOString()} [${interaction.member.user.id}] reported [${hallArg}]`);
         return `:white_check_mark: Fire alarm reported at: \`${hallArg}\` on \`${formatTimestamp(timestamp)}\`. Thank you!`
