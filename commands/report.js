@@ -16,6 +16,7 @@ const MIN_TIME_DIFF = 5 * 60 * 1000;
 
 // cooldown tracking
 const COOLDOWN = 24 * 60 * 60 * 1000;
+const blacklist = [];
 
 /**
  * Reports a fire and logs it in the Google sheets
@@ -23,7 +24,9 @@ const COOLDOWN = 24 * 60 * 60 * 1000;
  * @returns message for replying to the interaction
  */
 module.exports.execute = async function (interaction) {
+    if (blacklist.includes[interaction.member.user.id]) return;
     if (!interaction.data.options) return ":question: Strange...no arguments received";
+
     const timestamp = new Date();
     const cooldowns = JSON.parse(fs.readFileSync("./user_reports.json"));
 
@@ -35,8 +38,8 @@ module.exports.execute = async function (interaction) {
         .filter(t => Math.abs(new Date(t) - timestamp) < COOLDOWN)
         .length;
     if (numReports >= 5) {
-        console.log("greater than");
-        return;
+        blacklist.push(interaction.member.user.id);
+        return "You've made 5 reports in the last 24h, take a chill pill :pill:";
     }
 
     // extract arguments
